@@ -42,6 +42,7 @@ public class Suspension : MonoBehaviour
     [HideInInspector] public float wheelAccelScale;
     [SerializeField] float gripFactor = 0.8f;
     [SerializeField] float tireMass = 10f;
+    Vector3 wheelPos;
 
     //AccelerationForces
     private Vector3 tractiveForce;
@@ -65,6 +66,8 @@ public class Suspension : MonoBehaviour
         carController = transform.root.GetComponent<CarController>();
 
         wheelMesh       = transform.GetChild(0);
+        wheelPos        = wheelMesh.localPosition;
+
         carRigidBody    = transform.root.GetComponent<Rigidbody>();
         minSpringLength = springRestLength - springMaxTravel;
         maxSpringLength = springRestLength + springMaxTravel;
@@ -99,28 +102,8 @@ public class Suspension : MonoBehaviour
             AccelerationUpdate();
             ApplyTireFriction(hitInfo);
             ApplyTireRotation(hitInfo);
-            //Vector3 acceleration = carRigidBody.GetAccumulatedForce(Time.fixedDeltaTime)/ carRigidBody.mass;
-            //Vector3 carVelocity = carRigidBody.velocity + Time.fixedDeltaTime * acceleration;
-            //Vector3 carPostion = carRigidBody.transform.position + Time.fixedDeltaTime * carVelocity;
-            //float h = 2.1f;
-            ////print(h);
-            //frontWeight = 0.5f * carWeight - (h / 0.6f) * carRigidBody.mass * acceleration.magnitude;
-            //rearWeight = 0.5f * carWeight + (h / 0.6f) * carRigidBody.mass * acceleration.magnitude;
-
-            //Vector3 frontWeightForce = frontWeight * transform.forward;
-            //Vector3 rearWeightForce = rearWeight * transform.forward;
-
-            //if (frontLeft || frontRight) 
-            //{
-            //    maxTractionForce = tireFrictionCoeff * frontWeightForce;
-            //}
-            //else
-            //{
-            //    maxTractionForce = tireFrictionCoeff * rearWeightForce;
-            //}
-            ////carRigidBody.AddForceAtPosition(maxTractionForce, transform.position);
-            //print("Max Traction force: " + maxTractionForce);
-            //print("Tractive Force: " + tractiveForce);
+            wheelPos.y = hitInfo.distance - maxSpringLength - 0.5f* wheelRadius;
+            wheelMesh.localPosition = Vector3.Lerp(wheelMesh.localPosition , wheelPos, 2f);
         }
     }
 
